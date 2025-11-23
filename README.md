@@ -160,12 +160,14 @@ Basic Authentication: All API endpoints are protected. Only authorized admin use
 
 📸 Screenshots
 Web Dashboard
- <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/49097702-eac3-4d24-a24a-4370a1a13b82" />
+ <img width="1920" height="1080" alt="image" src="screenshots\Screenshot 2025-11-23 214241.png" />
+ <img width="1920" height="1080" alt="image" src="screenshots\Screenshot 2025-11-23 214301.png" />
+ <img width="1920" height="1080" alt="image" src="screenshots\Screenshot 2025-11-23 214230.png" />
 
 
 
 Desktop Application
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/e930841a-2af5-41e7-89ac-11177fe7e721" />
+<img width="1920" height="1080" alt="image" src="screenshots\Screenshot 2025-11-23 214145.png" />
 
 
 PDF Report
