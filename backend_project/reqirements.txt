@@ -1,0 +1,15 @@
+asgiref==3.11.0
+Django==5.2.8
+djangorestframework==3.16.1
+django-cors-headers==4.9.0
+matplotlib==3.8.4  # You may not have installed this here, but check for safety.
+numpy==2.3.5
+openpyxl==3.1.5
+pandas==2.3.3
+Pillow==12.0.0
+python-dateutil==2.9.0.post0
+pytz==2025.2
+reportlab==4.1.0 # The version you installed may vary slightly
+sqlparse==0.5.3
+six==1.17.0
+tzdata==2025.2

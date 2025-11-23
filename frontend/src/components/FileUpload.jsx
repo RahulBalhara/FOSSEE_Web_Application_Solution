@@ -1,252 +1,218 @@
-// // src/components/FileUpload.jsx
-// import React, { useState } from 'react';
-// import axios from 'axios';
-
-// const FileUpload = ({ onUploadSuccess }) => {
-//   const [file, setFile] = useState(null);
-//   const [username, setUsername] = useState('');
-//   const [password, setPassword] = useState('');
-//   const [status, setStatus] = useState('');
-
-//   const handleFileChange = (e) => {
-//     setFile(e.target.files[0]);
-//   };
-
-//   const handleUpload = async (e) => {
-//     e.preventDefault();
-//     if (!file || !username || !password) {
-//       setStatus('Please select a file and enter credentials.');
-//       return;
-//     }
-
-//     const formData = new FormData();
-//     formData.append('file', file); // Matches the 'file' key expected by Django
-
-//     try {
-//       setStatus('Uploading...');
-      
-//       // POST request to your Django API
-//       const response = await axios.post('http://127.0.0.1:8000/api/upload/', formData, {
-//         auth: {
-//           username: username, // Basic Auth credentials
-//           password: password
-//         },
-//         headers: {
-//           'Content-Type': 'multipart/form-data',
-//         }
-//       });
-
-//       setStatus('Upload Successful!');
-//       // Send the summary data back up to the main App component
-//       onUploadSuccess(response.data); 
-      
-//     } catch (error) {
-//       console.error(error);
-//       setStatus('Upload Failed: ' + (error.response?.data?.error || error.message));
-//     }
-//   };
-
-//   return (
-//     <div style={{ border: '1px solid #ccc', padding: '20px', margin: '20px', borderRadius: '8px' }}>
-//       <h2>1. Upload Equipment CSV</h2>
-//       <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '400px', margin: '0 auto' }}>
-        
-//         {/* File Input */}
-//         <div>
-//             <label>Select CSV: </label>
-//             <input type="file" accept=".csv" onChange={handleFileChange} />
-//         </div>
-
-//         {/* Auth Inputs (Required for Basic Auth) */}
-//         <input 
-//           type="text" 
-//           placeholder="Admin Username" 
-//           value={username} 
-//           onChange={(e) => setUsername(e.target.value)} 
-//           style={{padding: '8px'}}
-//         />
-//         <input 
-//           type="password" 
-//           placeholder="Admin Password" 
-//           value={password} 
-//           onChange={(e) => setPassword(e.target.value)} 
-//           style={{padding: '8px'}}
-//         />
-
-//         <button type="submit" style={{ padding: '10px', cursor: 'pointer', backgroundColor: '#4CAF50', color: 'white', border: 'none' }}>
-//           Upload Data
-//         </button>
-//       </form>
-      
-//       {status && <p style={{ marginTop: '10px', fontWeight: 'bold' }}>{status}</p>}
-//     </div>
-//   );
-// };
-
-// export default FileUpload;
-
-// src/components/HistoryList.jsx
-// import React, { useEffect, useState } from 'react';
-// import axios from 'axios';
-
-// const FileUpload = ({ username, password, refreshTrigger }) => {
-//   const [history, setHistory] = useState([]);
-//   const [loading, setLoading] = useState(false);
-
-//   // Fetch history whenever credentials change or a new upload happens (refreshTrigger)
-//   useEffect(() => {
-//     if (username && password) {
-//       fetchHistory();
-//     }
-//   }, [username, password, refreshTrigger]);
-
-//   const fetchHistory = async () => {
-//     try {
-//       setLoading(true);
-//       const response = await axios.get('http://127.0.0.1:8000/api/history/', {
-//         auth: { username, password }
-//       });
-//       setHistory(response.data);
-//     } catch (error) {
-//       console.error("Error fetching history", error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const handleDownloadPDF = async (id, fileName) => {
-//     try {
-//       // We must use axios to download because of the Basic Auth requirement
-//       const response = await axios.get(`http://127.0.0.1:8000/api/report/${id}/`, {
-//         auth: { username, password },
-//         responseType: 'blob', // Important: This tells axios to treat the response as a file
-//       });
-
-//       // Create a hidden link to trigger the browser download
-//       const url = window.URL.createObjectURL(new Blob([response.data]));
-//       const link = document.createElement('a');
-//       link.href = url;
-//       link.setAttribute('download', `Report_${fileName}.pdf`);
-//       document.body.appendChild(link);
-//       link.click();
-//       link.remove();
-//     } catch (error) {
-//       alert("Failed to download PDF. Check console.");
-//       console.error(error);
-//     }
-//   };
-
-//   return (
-//     <div style={{ marginTop: '30px', padding: '20px', borderTop: '2px solid #eee' }}>
-//       <h2>History & Reports (Last 5)</h2>
-      
-//       {loading && <p>Loading history...</p>}
-
-//       {!loading && history.length === 0 && <p>No history found.</p>}
-
-//       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '600px', margin: '0 auto' }}>
-//         {history.map((item) => (
-//           <div key={item.id} style={itemStyle}>
-//             <div>
-//               <strong>{item.file_name}</strong>
-//               <br />
-//               <small>{new Date(item.uploaded_at).toLocaleString()}</small>
-//             </div>
-            
-//             <button 
-//               onClick={() => handleDownloadPDF(item.id, item.file_name)}
-//               style={buttonStyle}
-//             >
-//               Download PDF
-//             </button>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// const itemStyle = {
-//   display: 'flex',
-//   justifyContent: 'space-between',
-//   alignItems: 'center',
-//   padding: '10px',
-//   backgroundColor: 'white',
-//   border: '1px solid #ddd',
-//   borderRadius: '5px'
-// };
-
-// const buttonStyle = {
-//   backgroundColor: '#008CBA',
-//   color: 'white',
-//   border: 'none',
-//   padding: '8px 12px',
-//   borderRadius: '4px',
-//   cursor: 'pointer'
-// };
-
-// export default FileUpload;
-
-// src/components/FileUpload.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 
+// --- Modern Design Style Definitions ---
+
+const fileUploadStyles = {
+    card: {
+        // Container styling consistent with Dashboard cards
+        backgroundColor: '#ffffff',
+        padding: '30px',
+        borderRadius: '12px',
+        boxShadow: '0 6px 15px rgba(0, 0, 0, 0.08)',
+        maxWidth: '500px',
+        margin: '30px auto', // Center the card - FIX: Removed duplicate 'margin' key
+        fontFamily: 'Inter, sans-serif',
+    },
+    header: {
+        color: '#34495e',
+        marginBottom: '20px',
+        fontSize: '1.5rem',
+        fontWeight: 600,
+        textAlign: 'center',
+    },
+    form: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+    },
+    fileInputContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        border: '2px dashed #bdc3c7',
+        borderRadius: '8px',
+        padding: '20px',
+        cursor: 'pointer',
+        transition: 'border-color 0.3s',
+        textAlign: 'center',
+    },
+    fileInput: {
+        // Hide default file input and use custom styling
+        width: '0.1px',
+        height: '0.1px',
+        opacity: 0,
+        overflow: 'hidden',
+        position: 'absolute',
+        zIndex: -1,
+    },
+    fileLabel: {
+        fontSize: '16px',
+        color: '#3498db', // Blue accent
+        fontWeight: 500,
+        cursor: 'pointer',
+    },
+    fileName: {
+        marginTop: '10px',
+        fontSize: '14px',
+        color: '#7f8c8d',
+    },
+    button: {
+        padding: '12px 25px',
+        cursor: 'pointer',
+        backgroundColor: '#2ecc71', // Green for success/action
+        color: 'white',
+        border: 'none',
+        borderRadius: '8px',
+        fontSize: '16px',
+        fontWeight: 600,
+        transition: 'background-color 0.3s, transform 0.1s',
+        boxShadow: '0 4px #27ae60', // 3D effect
+    },
+    buttonHover: {
+        backgroundColor: '#27ae60',
+        transform: 'translateY(1px)',
+        boxShadow: '0 3px #27ae60',
+    },
+    statusMessage: (color) => ({
+        marginTop: '20px',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        padding: '10px',
+        borderRadius: '6px',
+        color: color,
+        // The color.replace needed to be adjusted slightly to handle the color string format correctly in this context
+        // We will keep the original implementation but ensure the color value is a valid CSS string
+        backgroundColor: color.includes('rgb') ? color.replace(')', ', 0.1)') : `${color}1A`, 
+    }),
+};
+
 const FileUpload = ({ onUploadSuccess, username, password }) => {
-  const [file, setFile] = useState(null);
-  const [status, setStatus] = useState('');
+    const [file, setFile] = useState(null);
+    const [status, setStatus] = useState('');
+    const [isUploading, setIsUploading] = useState(false);
+    const [isHovering, setIsHovering] = useState(false);
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            setFile(selectedFile);
+            setStatus(`File selected: ${selectedFile.name}`);
+        } else {
+            setFile(null);
+            setStatus('');
+        }
+    };
 
-  const handleUpload = async (e) => {
-    e.preventDefault();
-    
-    if (!username || !password) {
-        setStatus('Please enter your credentials at the top of the page first.');
-        return;
-    }
-    if (!file) {
-      setStatus('Please select a file.');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      setStatus('Uploading...');
-      const response = await axios.post('http://127.0.0.1:8000/api/upload/', formData, {
-        auth: { username, password },
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-
-      setStatus('Upload Successful!');
-      onUploadSuccess(response.data); 
-      
-    } catch (error) {
-      console.error(error);
-      setStatus('Upload Failed: ' + (error.response?.data?.error || error.message));
-    }
-  };
-
-  return (
-    <div style={{ border: '1px solid #ccc', padding: '20px', margin: '20px', borderRadius: '8px', backgroundColor: '#fff' }}>
-      <h2>1. Upload Equipment CSV</h2>
-      <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', gap: '15px', maxWidth: '400px', margin: '0 auto' }}>
+    const handleUpload = async (e) => {
+        e.preventDefault();
         
-        <div>
-            <input type="file" accept=".csv" onChange={handleFileChange} style={{ padding: '10px' }}/>
-        </div>
+        if (isUploading) return;
 
-        <button type="submit" style={{ padding: '10px', cursor: 'pointer', backgroundColor: '#4CAF50', color: 'white', border: 'none', fontSize: '16px' }}>
-          Upload Data
-        </button>
-      </form>
-      
-      {status && <p style={{ marginTop: '10px', fontWeight: 'bold', color: '#333' }}>{status}</p>}
-    </div>
-  );
+        if (!username || !password) {
+            setStatus('Please enter your credentials at the top of the page first.');
+            return;
+        }
+        if (!file) {
+            setStatus('Please select a file.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            setIsUploading(true);
+            setStatus('Uploading data to server...');
+            
+            // Wait for a short moment to display 'Uploading...' status
+            await new Promise(resolve => setTimeout(resolve, 500)); 
+
+            const response = await axios.post('http://127.0.0.1:8000/api/upload/', formData, {
+                auth: { username, password },
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            const successMessage = 'Upload Successful! Data processed.';
+            setStatus(successMessage);
+            onUploadSuccess(response.data); 
+            
+        } catch (error) {
+            console.error(error);
+            const errorMessage = 'Upload Failed: ' + (error.response?.data?.error || error.message || 'Unknown Error');
+            setStatus(errorMessage);
+            
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    let statusColor = '#34495e'; // Neutral
+    if (status.includes('Successful')) {
+        statusColor = '#2ecc71'; // Green for success
+    } else if (status.includes('Failed') || status.includes('Please enter')) {
+        statusColor = '#e74c3c'; // Red for error
+    }
+
+    // Determine button styles based on state
+    const currentButtonStyles = {
+        ...fileUploadStyles.button,
+        ...(isHovering ? fileUploadStyles.buttonHover : {}),
+        opacity: isUploading ? 0.6 : 1,
+        // Apply different style when disabled to indicate inability to click
+        cursor: isUploading ? 'not-allowed' : 'pointer',
+        boxShadow: isUploading ? 'none' : fileUploadStyles.button.boxShadow,
+        transform: isUploading ? 'translateY(4px)' : (isHovering ? fileUploadStyles.buttonHover.transform : 'none'),
+    };
+
+
+    return (
+        <div style={fileUploadStyles.card}>
+            <h2 style={fileUploadStyles.header}>Upload Equipment Data (CSV)</h2>
+            
+            <form onSubmit={handleUpload} style={fileUploadStyles.form}>
+                
+                {/* Custom File Input Area */}
+                <div 
+                    style={fileUploadStyles.fileInputContainer}
+                    onClick={() => document.getElementById('file-upload-input').click()}
+                >
+                    {/* Input is hidden but triggered by clicking the div */}
+                    <input 
+                        type="file" 
+                        accept=".csv" 
+                        onChange={handleFileChange} 
+                        id="file-upload-input"
+                        style={fileUploadStyles.fileInput}
+                    />
+                    <div>
+                        <span style={fileUploadStyles.fileLabel}>
+                            {file ? 'Change File' : 'Click to select .CSV file'}
+                        </span>
+                        {file && <p style={fileUploadStyles.fileName}>{file.name}</p>}
+                    </div>
+                </div>
+
+                {/* Upload Button */}
+                <button 
+                    type="submit" 
+                    style={currentButtonStyles}
+                    onMouseEnter={() => setIsHovering(true)}
+                    onMouseLeave={() => setIsHovering(false)}
+                    disabled={isUploading || !file} // Disable if uploading OR no file is selected
+                >
+                    {isUploading ? 'Processing...' : 'Upload & Analyze Data'}
+                </button>
+            </form>
+            
+            {/* Status Message */}
+            {status && (
+                <p style={fileUploadStyles.statusMessage(statusColor)}>
+                    {status}
+                </p>
+            )}
+        </div>
+    );
 };
 
 export default FileUpload;
